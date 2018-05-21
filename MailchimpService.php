@@ -1,8 +1,8 @@
 <?php
 
-namespace Services;
+//namespace Services;
 
-use Nette\InvalidStateException;
+//use Nette\InvalidStateException;
 
 /** Subscribes and deletes list member
  * 
@@ -18,7 +18,9 @@ dump($container->mailchimp->getStatus($mail) == 'subscribed');
 dump($container->mailchimp->delete($mail) == NULL);
 dump($container->mailchimp->getStatus($mail) == FALSE);
  */
-class MailchimpService
+//class MailchimpService
+class Mailchimp
+
 {
 
 	protected $apiurl;
@@ -67,7 +69,9 @@ class MailchimpService
 		{
 			if ($_rerun)
 			{
-				throw new InvalidStateException("Error in Mailchimp#subscribe($email) - after delete status didn't emit 404");
+				//throw new InvalidStateException("Error in Mailchimp#subscribe($email) - after delete status didn't emit 404");
+				die ("Error in Mailchimp#subscribe($email) - after delete status didn't emit 404");
+			
    		}
 		
 			$this->delete($email);
@@ -111,6 +115,18 @@ class MailchimpService
 		return $ret->response->status;
 	}
 
+	public function getList()
+	{
+		$ret = $this->apiCall('GET', "/lists/$this->list/members");
+
+		if ($ret->code == 404)
+		{
+			return false;
+		}
+
+		return $ret; //->response->status;
+	}
+	
 	/** Make custom api call
 	 * @param string $method POST or GET
 	 * @param string $resource starting with /
@@ -149,7 +165,9 @@ class MailchimpService
 		{
 			$err = curl_error($ch);
 			file_put_contents($this->logfile, "$log >>> curl error: $err\n", FILE_APPEND);
-			throw new InvalidStateException("Mailchimp request failed. Reason: $err");
+			//throw new InvalidStateException("Mailchimp request failed. Reason: $err");
+			die ("Mailchimp request failed. Reason: $err");
+
 		}
 
 		//response OK - build returned object
@@ -166,7 +184,9 @@ class MailchimpService
 		//mailchimp error
 		if ($return->code == 401)
 		{
-			throw new InvalidStateException("Mailchimp request failed. Reason: 401 {$return->response->detail}");
+			//throw new InvalidStateException("Mailchimp request failed. Reason: 401 {$return->response->detail}");
+			die ("Mailchimp request failed. Reason: 401 {$return->response->detail}");
+	
 		}
 
 		return $return;
